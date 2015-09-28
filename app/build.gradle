@@ -1,0 +1,67 @@
+//因为该模块是一个application，所以需要加载该插件，如果是library，需要com.android.library
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        config {
+            storeFile file('D:/keystore/caroline.jks')
+            keyAlias 'caroline'
+            keyPassword 'lintcgirl18'
+            storePassword 'lintcgirl18'
+        }
+    }
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+    //默认配置参数，里面包含的主要是manifest中的参数
+    // such as applicationId, minSdkVersion, targetSdkVersion, and test information
+    defaultConfig {
+        //applicationId代表应用的包名，也是最新的写法
+        applicationId "com.example.caroline.gradlesample"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    //build properties such as debuggable, ProGuard enabling, debug signing,
+    // version name suffix and test information
+    buildTypes {
+        release {
+            //主要用来控制是否运行混淆的,还不是很懂，继续查找
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //在BuildConfig.java中添加字段
+            buildConfigField("String", "url", "${releaseUrl}");
+            //指定签名使用哪个keystore
+            signingConfig signingConfigs.config
+        }
+        debug {
+            buildConfigField("String", "url", "${debugUrl}");
+        }
+    }
+
+    //下面这句话很重要,组合的方式是按照这个顺序来的,如果是"type","cpu"，则组合出来的是free-x86-debug
+    flavorDimensions "CPU","type"
+    productFlavors {
+        x86 {
+            dimension='CPU'
+        }
+        arm {
+            dimension='CPU'
+        }
+        free {
+            dimension='type'
+        }
+        paid {
+            dimension='type'
+        }
+    }
+}
+
+dependencies {
+    //local binary dependency
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    //remote binary dependency
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    //使用其他module的资源
+    compile 'com.viewpagerindicator:library:2.4.0'
+}
